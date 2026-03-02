@@ -48,7 +48,7 @@ export async function getAllBookings(req: Request, res: Response): Promise<void>
 
 export async function updateBooking(req: Request, res: Response): Promise<void> {
   try {
-    const bookingId = parseInt(req.params.bookingId, 10);
+    const bookingId = parseInt(req.params.bookingId ?? '0', 10);
     if (isNaN(bookingId)) {
       errorRes(res, 400, 'Invalid booking ID', 'bookingId must be a number');
       return;

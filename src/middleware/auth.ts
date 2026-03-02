@@ -57,7 +57,7 @@ export function requireAdminOrOwn(userIdParam: string) {
       res.status(401).json({ success: false, message: 'Unauthorized', errors: 'Authentication required' });
       return;
     }
-    const targetUserId = parseInt(req.params[userIdParam], 10);
+    const targetUserId = parseInt(req.params[userIdParam] ?? '0', 10);
     if (req.user.role === 'admin' || req.user.userId === targetUserId) {
       next();
       return;

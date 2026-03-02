@@ -13,7 +13,7 @@ export async function getAllUsers(_req: Request, res: Response): Promise<void> {
 
 export async function updateUser(req: Request, res: Response): Promise<void> {
   try {
-    const userId = parseInt(req.params.userId, 10);
+    const userId = parseInt(req.params.userId ?? '0', 10);
     if (isNaN(userId)) {
       errorRes(res, 400, 'Invalid user ID', 'userId must be a number');
       return;
@@ -54,7 +54,7 @@ export async function updateUser(req: Request, res: Response): Promise<void> {
 
 export async function deleteUser(req: Request, res: Response): Promise<void> {
   try {
-    const userId = parseInt(req.params.userId, 10);
+    const userId = parseInt(req.params.userId ?? '0', 10);
     if (isNaN(userId)) {
       errorRes(res, 400, 'Invalid user ID', 'userId must be a number');
       return;

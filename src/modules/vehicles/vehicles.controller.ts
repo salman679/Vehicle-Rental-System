@@ -35,7 +35,7 @@ export async function getAllVehicles(_req: Request, res: Response): Promise<void
 
 export async function getVehicleById(req: Request, res: Response): Promise<void> {
   try {
-    const vehicleId = parseInt(req.params.vehicleId, 10);
+    const vehicleId = parseInt(req.params.vehicleId ?? '0', 10);
     if (isNaN(vehicleId)) {
       errorRes(res, 400, 'Invalid vehicle ID', 'vehicleId must be a number');
       return;
@@ -53,7 +53,7 @@ export async function getVehicleById(req: Request, res: Response): Promise<void>
 
 export async function updateVehicle(req: Request, res: Response): Promise<void> {
   try {
-    const vehicleId = parseInt(req.params.vehicleId, 10);
+    const vehicleId = parseInt(req.params.vehicleId ?? '0', 10);
     if (isNaN(vehicleId)) {
       errorRes(res, 400, 'Invalid vehicle ID', 'vehicleId must be a number');
       return;
@@ -84,7 +84,7 @@ export async function updateVehicle(req: Request, res: Response): Promise<void> 
 
 export async function deleteVehicle(req: Request, res: Response): Promise<void> {
   try {
-    const vehicleId = parseInt(req.params.vehicleId, 10);
+    const vehicleId = parseInt(req.params.vehicleId ?? '0', 10);
     if (isNaN(vehicleId)) {
       errorRes(res, 400, 'Invalid vehicle ID', 'vehicleId must be a number');
       return;

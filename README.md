@@ -109,5 +109,3 @@ HTTP status codes: 200, 201 (Created), 400 (validation), 401 (Unauthorized), 403
    - `DATABASE_URL` – your PostgreSQL connection string (e.g. Neon)
    - `JWT_SECRET` – a strong secret for JWT signing
 4. Deploy. The build runs `npm run build`; all requests are handled by the serverless function at `api/index.js`.
-
-Your API will be at `https://<your-project>.vercel.app/api/v1/...` (e.g. `https://<your-project>.vercel.app/api/v1/vehicles`).

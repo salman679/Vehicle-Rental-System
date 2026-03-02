@@ -9,6 +9,18 @@ const app = express();
 
 app.use(express.json());
 
+app.get('/', (_req, res) => {
+  res.json({
+    success: true,
+    message: 'Welcome to the Vehicle Rental System API',
+    data: {
+      name: 'Vehicle Rental System API',
+      version: '1.0',
+      description: 'Backend API for vehicle rental management — vehicles, customers, bookings, and role-based auth.',
+    },
+  });
+});
+
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/vehicles', vehiclesRoutes);
 app.use('/api/v1/users', usersRoutes);

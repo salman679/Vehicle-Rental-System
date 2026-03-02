@@ -1,36 +1,66 @@
 # Vehicle Rental System
 
-Backend API for a vehicle rental management system with vehicles, customers, bookings, and role-based authentication (Admin and Customer).
+**Backend API** for a vehicle rental management system with role-based access, vehicle inventory, and booking lifecycle management.
 
-## Tech Stack
+**Live URL:** [https://vehicle-rental-system-ashy-eta.vercel.app](https://vehicle-rental-system-ashy-eta.vercel.app)  
+**Repository:** [https://github.com/salman679/Vehicle-Rental-System](https://github.com/salman679/Vehicle-Rental-System)
 
-- **Node.js** + **TypeScript**
-- **Express.js** (web framework)
-- **PostgreSQL** (database)
-- **bcrypt** (password hashing)
-- **jsonwebtoken** (JWT authentication)
+---
 
-## Setup
+## Features
 
-1. **Install dependencies**
+- **Authentication** — User registration and login with JWT; bcrypt password hashing.
+- **Role-based access** — **Admin** (full access) and **Customer** (own profile and bookings).
+- **Vehicles** — CRUD with types (car, bike, van, SUV), registration numbers, daily rent price, and availability status.
+- **Users** — List all (Admin), update profile (Admin or own), delete (Admin; blocked if active bookings).
+- **Bookings** — Create with automatic price calculation (daily rate × days); cancel (Customer, before start) or mark returned (Admin); auto-return when rental period ends.
+- **Validation & safety** — Delete vehicle/user only when no active bookings; consistent JSON responses and error handling.
+
+---
+
+## Technology Stack
+
+| Layer        | Technology                          |
+| ------------ | ------------------------------------ |
+| Runtime      | Node.js                             |
+| Language     | TypeScript                          |
+| Web framework| Express.js                          |
+| Database     | PostgreSQL                          |
+| Auth         | JWT (jsonwebtoken), bcrypt          |
+| Hosting      | Vercel (serverless)                 |
+
+---
+
+## Setup & Usage
+
+### Prerequisites
+
+- Node.js (v18 or later recommended)
+- PostgreSQL instance (e.g. [Neon](https://neon.tech), local, or any Postgres host)
+
+### Local setup
+
+1. **Clone and install**
 
    ```bash
+   git clone https://github.com/salman679/Vehicle-Rental-System.git
+   cd Vehicle-Rental-System
    npm install
    ```
 
-2. **Environment**
+2. **Environment variables**
 
    Copy `.env.example` to `.env` and set:
 
-   - `PORT` – server port (default `3000`)
-   - `JWT_SECRET` – secret for signing JWTs
-   - `DATABASE_URL` – PostgreSQL connection string (e.g. `postgresql://user:password@localhost:5432/vehicle_rental_db`)
+   | Variable       | Description                          |
+   | -------------- | ------------------------------------ |
+   | `PORT`         | Server port (default `3000`)         |
+   | `JWT_SECRET`   | Secret for signing JWTs              |
+   | `DATABASE_URL` | PostgreSQL connection string         |
 
-3. **Database**
+   Tables are created automatically on first run from `src/db/schema.sql`.
 
-   Tables are created automatically when you start the server (from `src/db/schema.sql`). Ensure your DB exists and `DATABASE_URL` is set.
-
-4. **Run**
+3. **Run the server**
 
    ```bash
    npm run dev
@@ -43,69 +73,81 @@ Backend API for a vehicle rental management system with vehicles, customers, boo
    npm start
    ```
 
-## API Base
+   API base: `http://localhost:3000`. Root: [http://localhost:3000/](http://localhost:3000/) returns a welcome message and endpoint overview.
 
-All API routes are under **`/api/v1`**.
+### Usage (API)
 
-### Authentication
+- **Base path:** `/api/v1`
+- **Auth:** Register via `POST /api/v1/auth/signup`, login via `POST /api/v1/auth/signin`; use the returned token in the header: `Authorization: Bearer <token>`.
+- **Public:** `GET /api/v1/vehicles`, `GET /api/v1/vehicles/:vehicleId`.
+- **Admin-only:** Create/update/delete vehicles, list/delete users.
+- **Role-based:** Bookings — create (Customer or Admin), list (Admin: all; Customer: own), update (Customer: cancel; Admin: mark returned).
 
-- `POST /api/v1/auth/signup` – Register (body: name, email, password, phone, role?)
-- `POST /api/v1/auth/signin` – Login (body: email, password) → returns `token` and `user`
+Example with live API:
 
-Protected routes use header: `Authorization: Bearer <token>`.
+```bash
+# Root / welcome
+curl https://vehicle-rental-system-ashy-eta.vercel.app
 
-### Vehicles
+# List vehicles
+curl https://vehicle-rental-system-ashy-eta.vercel.app/api/v1/vehicles
+```
 
-- `POST /api/v1/vehicles` – Create (Admin only)
-- `GET /api/v1/vehicles` – List all (public)
-- `GET /api/v1/vehicles/:vehicleId` – Get one (public)
-- `PUT /api/v1/vehicles/:vehicleId` – Update (Admin only)
-- `DELETE /api/v1/vehicles/:vehicleId` – Delete (Admin only; no active bookings)
+---
 
-### Users
+## API Reference (summary)
 
-- `GET /api/v1/users` – List all (Admin only)
-- `PUT /api/v1/users/:userId` – Update (Admin: any user; Customer: own profile only)
-- `DELETE /api/v1/users/:userId` – Delete (Admin only; no active bookings)
+| Method | Endpoint                     | Access     | Description                |
+| ------ | --------------------------- | ---------- | -------------------------- |
+| POST   | `/api/v1/auth/signup`        | Public     | Register                   |
+| POST   | `/api/v1/auth/signin`        | Public     | Login → JWT                |
+| POST   | `/api/v1/vehicles`          | Admin      | Create vehicle             |
+| GET    | `/api/v1/vehicles`          | Public     | List vehicles              |
+| GET    | `/api/v1/vehicles/:id`      | Public     | Get vehicle                |
+| PUT    | `/api/v1/vehicles/:id`      | Admin      | Update vehicle             |
+| DELETE | `/api/v1/vehicles/:id`      | Admin      | Delete vehicle             |
+| GET    | `/api/v1/users`             | Admin      | List users                 |
+| PUT    | `/api/v1/users/:id`         | Admin/Own  | Update user                |
+| DELETE | `/api/v1/users/:id`         | Admin      | Delete user                |
+| POST   | `/api/v1/bookings`          | Customer/Admin | Create booking        |
+| GET    | `/api/v1/bookings`          | Role-based | List bookings              |
+| PUT    | `/api/v1/bookings/:id`      | Role-based | Cancel or mark returned   |
 
-### Bookings
+### Response format
 
-- `POST /api/v1/bookings` – Create (Customer or Admin); validates availability, sets vehicle to booked, computes total price
-- `GET /api/v1/bookings` – Admin: all bookings; Customer: own only
-- `PUT /api/v1/bookings/:bookingId` – Customer: cancel (before start date); Admin: mark as returned (vehicle set to available)
+- **Success:** `{ "success": true, "message": "...", "data": ... }`
+- **Error:** `{ "success": false, "message": "...", "errors": "..." }`
 
-Bookings whose `rent_end_date` has passed are automatically marked as returned and the vehicle is set to available when listings or updates are performed.
+Status codes: `200`, `201`, `400`, `401`, `403`, `404`, `500`.
 
-## Project Structure
+---
+
+## Project structure
 
 ```
 src/
-├── config/          # App config (env)
-├── db/              # Pool, schema.sql, setup script
-├── middleware/      # Auth (JWT, requireAdmin, requireAdminOrOwn), error handler
+├── config/       # App config (env)
+├── db/            # Pool, schema.sql, init
+├── middleware/    # Auth, error handler
 ├── modules/
-│   ├── auth/        # signup, signin (routes, controller, service)
-│   ├── users/       # list, update, delete
-│   ├── vehicles/    # CRUD
-│   └── bookings/    # create, list, update + auto-return
-├── types/           # Shared types
-├── utils/           # response helpers
+│   ├── auth/      # signup, signin
+│   ├── users/
+│   ├── vehicles/
+│   └── bookings/
+├── types/
+├── utils/
 ├── app.ts
 └── server.ts
+api/
+└── index.js       # Vercel serverless entry
 ```
 
-## Response Format
-
-- Success: `{ "success": true, "message": "...", "data": ... }` (omit `data` for deletes)
-- Error: `{ "success": false, "message": "...", "errors": "..." }`
-
-HTTP status codes: 200, 201 (Created), 400 (validation), 401 (Unauthorized), 403 (Forbidden), 404 (Not Found), 500 (Server Error).
+---
 
 ## Deploy on Vercel
 
-1. Push the project to GitHub (or connect your repo in Vercel).
-2. In [Vercel](https://vercel.com), **New Project** → import this repo.
-3. Set **Environment Variables** in the project settings:
-   - `DATABASE_URL` – your PostgreSQL connection string (e.g. Neon)
-   - `JWT_SECRET` – a strong secret for JWT signing
-4. Deploy. The build runs `npm run build`; all requests are handled by the serverless function at `api/index.js`.
+1. Push the repo to GitHub and import it in [Vercel](https://vercel.com).
+2. Set **Environment Variables:** `DATABASE_URL`, `JWT_SECRET`.
+3. Deploy. Build runs `npm run build`; the API is served via `api/index.js`.
+
+Live demo: [https://vehicle-rental-system-ashy-eta.vercel.app](https://vehicle-rental-system-ashy-eta.vercel.app)

@@ -9,12 +9,12 @@
 
 ## Features
 
-- **Authentication** — User registration and login with JWT; bcrypt password hashing.
-- **Role-based access** — **Admin** (full access) and **Customer** (own profile and bookings).
-- **Vehicles** — CRUD with types (car, bike, van, SUV), registration numbers, daily rent price, and availability status.
-- **Users** — List all (Admin), update profile (Admin or own), delete (Admin; blocked if active bookings).
-- **Bookings** — Create with automatic price calculation (daily rate × days); cancel (Customer, before start) or mark returned (Admin); auto-return when rental period ends.
-- **Validation & safety** — Delete vehicle/user only when no active bookings; consistent JSON responses and error handling.
+- **Authentication** - User registration and login with JWT; bcrypt password hashing.
+- **Role-based access** - **Admin** (full access) and **Customer** (own profile and bookings).
+- **Vehicles** - CRUD with types (car, bike, van, SUV), registration numbers, daily rent price, and availability status.
+- **Users** - List all (Admin), update profile (Admin or own), delete (Admin; blocked if active bookings).
+- **Bookings** - Create with automatic price calculation (daily rate × days); cancel (Customer, before start) or mark returned (Admin); auto-return when rental period ends.
+- **Validation & safety** - Delete vehicle/user only when no active bookings; consistent JSON responses and error handling.
 
 ---
 
@@ -81,7 +81,7 @@
 - **Auth:** Register via `POST /api/v1/auth/signup`, login via `POST /api/v1/auth/signin`; use the returned token in the header: `Authorization: Bearer <token>`.
 - **Public:** `GET /api/v1/vehicles`, `GET /api/v1/vehicles/:vehicleId`.
 - **Admin-only:** Create/update/delete vehicles, list/delete users.
-- **Role-based:** Bookings — create (Customer or Admin), list (Admin: all; Customer: own), update (Customer: cancel; Admin: mark returned).
+- **Role-based:** Bookings - create (Customer or Admin), list (Admin: all; Customer: own), update (Customer: cancel; Admin: mark returned).
 
 Example with live API:
 
